@@ -29,3 +29,6 @@ components/components/*
 config.bin
 config.cvs
 managed_components/*
+.DS_Store
+.vscode/settings.json
+.vscode/settings.json

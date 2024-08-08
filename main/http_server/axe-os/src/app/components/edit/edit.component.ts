@@ -136,6 +136,12 @@ export class EditComponent implements OnInit {
           coreVoltage: [info.coreVoltage, [Validators.required]],
           frequency: [info.frequency, [Validators.required]],
           autofanspeed: [info.autofanspeed == 1, [Validators.required]],
+          autofanSetpoint: [info.autofanSetpoint == 1, [Validators.required]],
+          tempSetpoint: [info.tempSetpoint, [
+            Validators.required,
+            Validators.min(45),
+            Validators.max(70)
+          ]],
           invertfanpolarity: [info.invertfanpolarity == 1, [Validators.required]],
           fanspeed: [info.fanspeed, [Validators.required]],
         });

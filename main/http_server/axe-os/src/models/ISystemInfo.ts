@@ -32,6 +32,8 @@ export interface ISystemInfo {
     boardVersion: string,
     invertfanpolarity: number,
     autofanspeed: number,
+    autofanSetpoint: number,
+    tempSetpoint: number,
     fanspeed: number,
     fanrpm: number,
     coreVoltageActual: number,

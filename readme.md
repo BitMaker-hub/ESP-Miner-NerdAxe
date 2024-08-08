@@ -41,12 +41,14 @@ bitaxetool --config ./config.cvs --firmware ./esp-miner-factory-nerd101-v2.1.4.b
 
 ## How to build firmware
 
+You might use Visual Studio Code to build the firmware for NerdAxe. Within Visual Studio Code install ESP-IDF 5.2.x. At the moment you must configure lvgl graphics library using the SDK Configuration Editor to let the project build without any glitches:
 
-Install bitaxetool from pip. pip is included with Python 3.4 but if you need to install it check <https://pip.pypa.io/en/stable/installation/>
+- check "Swap the 2 bytes of RGB565 color. Useful if the display has an 8-bit interface (e.g. SPI)."
+- check "Enable Montserrat 10"
+- check "Enable subpixel rendering."
+- check "Use BGR instead RGB for sub-pixel rendering."
 
-```
-pip install --upgrade bitaxetool
-```
+Other settings might be left as default. 
 
 ## Preconfiguration
 

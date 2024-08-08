@@ -27,6 +27,8 @@
 #define TPS546_MAX_TEMP 145.0
 
 static const char * TAG = "power_management";
+double fan_speed_last_temp = 54.0;
+double fan_speed_result = 50.0;
 
 static float _fbound(float value, float lower_bound, float upper_bound)
 {
@@ -42,31 +44,48 @@ static float _fbound(float value, float lower_bound, float upper_bound)
 // The fan speed increases from 20% to 100% proportionally to the temperature increase from 50 and THROTTLE_TEMP
 static double automatic_fan_speed(float chip_temp, GlobalState * GLOBAL_STATE)
 {
-    double result = 0.0;
+
     double min_temp = 45.0;
-    double min_fan_speed = 35.0;
+    double min_fan_speed = 33.0;
+    double temp_setpoint = (double)nvs_config_get_u16(NVS_CONFIG_AUTO_TEMP_SETPOINT, 50);
+    uint8_t control_setpoint = nvs_config_get_u16(NVS_CONFIG_AUTO_FAN_SETPOINT, 0);
+    double p = 0.5;
+    double d = 1.5;
+
+    
 
     if (chip_temp < min_temp) {
-        result = min_fan_speed;
+        fan_speed_result = min_fan_speed;
     } else if (chip_temp >= THROTTLE_TEMP) {
-        result = 100;
+        fan_speed_result = 100;
     } else {
-        double temp_range = THROTTLE_TEMP - min_temp;
-        double fan_range = 100 - min_fan_speed;
-        result = ((chip_temp - min_temp) / temp_range) * fan_range + min_fan_speed;
+        if(control_setpoint) {
+            fan_speed_result += p * (chip_temp - temp_setpoint) + d * (chip_temp - fan_speed_last_temp);
+            if (fan_speed_result < min_fan_speed) {
+                fan_speed_result = min_fan_speed;
+            } 
+            if (fan_speed_result > 100) {
+                fan_speed_result = 100;
+            }
+            fan_speed_last_temp = chip_temp;
+        } else {
+            double temp_range = THROTTLE_TEMP - min_temp;
+            double fan_range = 100 - min_fan_speed;
+            fan_speed_result = ((chip_temp - min_temp) / temp_range) * fan_range + min_fan_speed;
+        }
     }
 
     switch (GLOBAL_STATE->device_model) {
         case DEVICE_MAX:
         case DEVICE_ULTRA:
         case DEVICE_SUPRA:
-            float perc = (float) result / 100;
+            float perc = (float) fan_speed_result / 100;
             GLOBAL_STATE->POWER_MANAGEMENT_MODULE.fan_perc = perc;
             EMC2101_set_fan_speed( perc );
             break;
         default:
     }
-	return result;
+	return fan_speed_result;
 }
 
 void POWER_MANAGEMENT_task(void * pvParameters)

@@ -396,6 +396,8 @@ lv_obj_t * initTDisplayS3(void){
     disp_drv.flush_cb = example_lvgl_flush_cb;
     disp_drv.draw_buf = &disp_buf;
     disp_drv.user_data = panel_handle;
+    disp_drv.sw_rotate = 1;
+    disp_drv.rotated = nvs_config_get_u16(NVS_CONFIG_FLIP_SCREEN, 0) ? LV_DISP_ROT_180 : LV_DISP_ROT_NONE;
     lv_disp_t *disp = lv_disp_drv_register(&disp_drv);
 
     //Configuration is completed.

@@ -77,6 +77,12 @@ export class SettingsComponent {
           coreVoltage: [info.coreVoltage, [Validators.required]],
           frequency: [info.frequency, [Validators.required]],
           autofanspeed: [info.autofanspeed == 1, [Validators.required]],
+          autofanSetpoint: [info.autofanSetpoint == 1, [Validators.required]],
+          tempSetpoint: [info.tempSetpoint, [
+            Validators.required,
+            Validators.min(45),
+            Validators.max(70)
+          ]],
           invertfanpolarity: [info.invertfanpolarity == 1, [Validators.required]],
           fanspeed: [info.fanspeed, [Validators.required]],
         });
@@ -115,7 +121,9 @@ export class SettingsComponent {
     form.flipscreen = form.flipscreen == true ? 1 : 0;
     form.invertscreen = form.invertscreen == true ? 1 : 0;
     form.invertfanpolarity = form.invertfanpolarity == true ? 1 : 0;
-    form.autofanspeed = form.autofanspeed == true ? 1 : 0; 
+    form.autofanspeed = form.autofanspeed == true ? 1 : 0;
+    form.autofanSetpoint = form.autofanSetpoint == true ? 1 : 0;
+    form.tempSetpoint = parseInt(form.tempSetpoint);
     form.autoscreenoff = form.autoscreenoff == true ? 1 : 0;
 
     if (form.wifiPass === 'password') {

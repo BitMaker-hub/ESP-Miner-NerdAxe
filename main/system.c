@@ -10,9 +10,7 @@
 #include "connect.h"
 #include "led_controller.h"
 #include "nvs_config.h"
-#include "oled.h"
 #include "vcore.h"
-#include "displays/displayDriver.h"
 
 #include "driver/gpio.h"
 #include "esp_app_desc.h"
@@ -36,6 +34,14 @@
 //Comment to use standard OLED
 //#define DISPLAY_OLED
 #define DISPLAY_TTGO
+
+#ifdef DISPLAY_OLED
+#include "oled.h"
+#endif
+
+#ifdef DISPLAY_TTGO
+#include "displays/displayDriver.h"
+#endif
 
 static const char * TAG = "SystemModule";
 
@@ -63,7 +69,7 @@ static void _init_system(GlobalState * GLOBAL_STATE)
     module->lastClockSync = 0;
     module->FOUND_BLOCK = false;
     module->startup_done = false;
-    
+
     // set the pool url
     module->pool_url = nvs_config_get_string(NVS_CONFIG_STRATUM_URL, CONFIG_STRATUM_URL);
 
@@ -103,11 +109,12 @@ static void _init_system(GlobalState * GLOBAL_STATE)
     }
 
     vTaskDelay(500 / portTICK_PERIOD_MS);
-    
+
     #ifdef DISPLAY_TTGO
         //Display TTGO-TdisplayS3
         display_init();
-    #else
+    #endif
+    #ifdef DISPLAY_OLED
         switch (GLOBAL_STATE->device_model) {
             case DEVICE_MAX:
             case DEVICE_ULTRA:
@@ -129,6 +136,7 @@ static void _init_system(GlobalState * GLOBAL_STATE)
 
 static void _update_hashrate(GlobalState * GLOBAL_STATE)
 {
+#ifdef DISPLAY_OLED
     SystemModule * module = &GLOBAL_STATE->SYSTEM_MODULE;
 
     if (module->screen_page != 0) {
@@ -148,10 +156,12 @@ static void _update_hashrate(GlobalState * GLOBAL_STATE)
             break;
         default:
     }
+#endif
 }
 
 static void _update_shares(GlobalState * GLOBAL_STATE)
 {
+#ifdef DISPLAY_OLED
     SystemModule * module = &GLOBAL_STATE->SYSTEM_MODULE;
 
     if (module->screen_page != 0) {
@@ -168,10 +178,12 @@ static void _update_shares(GlobalState * GLOBAL_STATE)
             break;
         default:
     }
+#endif
 }
 
 static void _update_best_diff(GlobalState * GLOBAL_STATE)
 {
+#ifdef DISPLAY_OLED
     SystemModule * module = &GLOBAL_STATE->SYSTEM_MODULE;
 
     if (module->screen_page != 0) {
@@ -189,10 +201,12 @@ static void _update_best_diff(GlobalState * GLOBAL_STATE)
             break;
         default:
     }
+#endif
 }
 
 static void _clear_display(GlobalState * GLOBAL_STATE)
 {
+#ifdef DISPLAY_OLED
     switch (GLOBAL_STATE->device_model) {
         case DEVICE_MAX:
         case DEVICE_ULTRA:
@@ -204,10 +218,12 @@ static void _clear_display(GlobalState * GLOBAL_STATE)
             break;
         default:
     }
+#endif
 }
 
 static void _update_system_info(GlobalState * GLOBAL_STATE)
 {
+#ifdef DISPLAY_OLED
     SystemModule * module = &GLOBAL_STATE->SYSTEM_MODULE;
     PowerManagementModule * power_management = &GLOBAL_STATE->POWER_MANAGEMENT_MODULE;
 
@@ -236,10 +252,12 @@ static void _update_system_info(GlobalState * GLOBAL_STATE)
             break;
         default:
     }
+#endif
 }
 
 static void _update_esp32_info(GlobalState * GLOBAL_STATE)
 {
+#ifdef DISPLAY_OLED
     SystemModule * module = &GLOBAL_STATE->SYSTEM_MODULE;
     uint32_t free_heap_size = esp_get_free_heap_size();
 
@@ -272,10 +290,12 @@ static void _update_esp32_info(GlobalState * GLOBAL_STATE)
             break;
         default:
     }
+#endif
 }
 
 static void _init_connection(GlobalState * GLOBAL_STATE)
 {
+#ifdef DISPLAY_OLED
     SystemModule * module = &GLOBAL_STATE->SYSTEM_MODULE;
 
     switch (GLOBAL_STATE->device_model) {
@@ -290,13 +310,13 @@ static void _init_connection(GlobalState * GLOBAL_STATE)
             break;
         default:
     }
-    
+#endif
 }
 
 static void _update_connection(GlobalState * GLOBAL_STATE)
 {
     SystemModule * module = &GLOBAL_STATE->SYSTEM_MODULE;
-
+#ifdef DISPLAY_OLED
     switch (GLOBAL_STATE->device_model) {
         case DEVICE_MAX:
         case DEVICE_ULTRA:
@@ -320,11 +340,15 @@ static void _update_connection(GlobalState * GLOBAL_STATE)
             break;
         default:
     }
+#endif
+#ifdef DISPLAY_TTGO
     display_UpdateWifiStatus(module->wifi_status);
+#endif
 }
 
 static void _update_system_performance(GlobalState * GLOBAL_STATE)
 {
+#ifdef DISPLAY_OLED
     SystemModule * module = &GLOBAL_STATE->SYSTEM_MODULE;
     // Calculate the uptime in seconds
     double uptime_in_seconds = (esp_timer_get_time() - module->start_time) / 1000000;
@@ -351,17 +375,14 @@ static void _update_system_performance(GlobalState * GLOBAL_STATE)
             break;
         default:
     }
+#endif
 }
 
 static void show_ap_information(const char * error, GlobalState * GLOBAL_STATE)
 {
     char ap_ssid[13];
     generate_ssid(ap_ssid);
-    
-    #ifdef DISPLAY_TTGO
-        display_PortalScreen(ap_ssid);
-    #endif
-
+#ifdef DISPLAY_OLED
     switch (GLOBAL_STATE->device_model) {
         case DEVICE_MAX:
         case DEVICE_ULTRA:
@@ -379,8 +400,10 @@ static void show_ap_information(const char * error, GlobalState * GLOBAL_STATE)
             break;
         default:
     }
-   
-
+#endif
+#ifdef DISPLAY_TTGO
+    display_PortalScreen(ap_ssid);
+#endif
 }
 
 static double _calculate_network_difficulty(uint32_t nBits)
@@ -636,16 +659,14 @@ void SYSTEM_notify_new_ntime(GlobalState * GLOBAL_STATE, uint32_t ntime)
 {
     SystemModule * module = &GLOBAL_STATE->SYSTEM_MODULE;
 
-    // Hourly clock sync
-    if (module->lastClockSync + (60 * 60) > ntime) {
-        return;
-    }
-    ESP_LOGI(TAG, "Syncing clock");
-    module->lastClockSync = ntime;
-    struct timeval tv;
-    tv.tv_sec = ntime;
-    tv.tv_usec = 0;
-    settimeofday(&tv, NULL);
+    if (module->lastClockSync + (60 * 60) < ntime) {// system was restarted with default value or update hourly
+        ESP_LOGI(TAG, "Syncing clock");
+        module->lastClockSync = ntime;
+        struct timeval tv;
+        tv.tv_sec = ntime;
+        tv.tv_usec = 0;
+        settimeofday(&tv, NULL);
+    } 
 }
 
 void SYSTEM_notify_found_nonce(GlobalState * GLOBAL_STATE, double found_diff, uint8_t job_id)

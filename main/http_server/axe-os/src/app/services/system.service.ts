@@ -52,6 +52,8 @@ export class SystemService {
           invertscreen: 0,
           invertfanpolarity: 1,
           autofanspeed: 1,
+          autofanSetpoint: 0,
+          tempSetpoint: 50,
           fanspeed: 100,
           fanrpm: 0,
           autoscreenoff: 0,

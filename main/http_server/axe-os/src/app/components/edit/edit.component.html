@@ -1,36 +1,39 @@
 <ng-container *ngIf="form != null">
     <form [formGroup]="form">
 
+      <div class="card">
+        <h5>WiFi</h5>
         <div class="field grid p-fluid">
-            <label htmlFor="hostname" class="col-12 mb-2 md:col-2 md:mb-0">Hostname:</label>
-            <div class="col-12 md:col-10">
-                <input pInputText id="hostname" type="text" formControlName="hostname" />
-            </div>
+          <label htmlFor="hostname" class="col-12 mb-2 md:col-2 md:mb-0">Hostname:</label>
+          <div class="col-12 md:col-10">
+            <input pInputText id="hostname" type="text" formControlName="hostname" />
+          </div>
         </div>
         <div class="field grid p-fluid">
-            <label htmlFor="ssid" class="col-12 mb-2 md:col-2 md:mb-0">WiFi SSID:</label>
-            <div class="col-12 md:col-10">
-                <input pInputText id="ssid" type="text" formControlName="ssid" />
-            </div>
+          <label htmlFor="ssid" class="col-12 mb-2 md:col-2 md:mb-0">WiFi SSID:</label>
+          <div class="col-12 md:col-10">
+              <input pInputText id="ssid" type="text" formControlName="ssid" />
+          </div>
         </div>
         <div class="field grid p-fluid">
-            <label htmlFor="wifiPass" class="col-12 mb-2 md:col-2 md:mb-0">WiFi Password:</label>
-            <div class="col-12 md:col-10">
-                <input pInputText id="wifiPass" formControlName="wifiPass" type="password" />
-            </div>
+          <label htmlFor="wifiPass" class="col-12 mb-2 md:col-2 md:mb-0">WiFi Password:</label>
+          <div class="col-12 md:col-10">
+            <input pInputText id="wifiPass" formControlName="wifiPass" type="password" />
+          </div>
         </div>
+      </div>
+      <div class="card">
+        <h5>Mining Pool</h5>
         <div class="field grid p-fluid">
-            <label htmlFor="stratumURL" class="col-12 mb-2 md:col-2 md:mb-0">Stratum URL:</label>
-            <div class="col-12 md:col-10">
-                <input pInputText id="stratumURL" type="text" formControlName="stratumURL"
-                    formControlName="stratumURL" />
-                <div>
-                    <small>Do not include 'stratum+tcp://' or port.</small>
-                </div>
+          <label htmlFor="stratumURL" class="col-12 mb-2 md:col-2 md:mb-0">Stratum URL:</label>
+          <div class="col-12 md:col-10">
+            <input pInputText id="stratumURL" type="text" formControlName="stratumURL"
+               formControlName="stratumURL" />
+            <div>
+              <small>Do not include 'stratum+tcp://' or port.</small>
             </div>
+          </div>
         </div>
-
-
         <div class="field grid p-fluid">
             <label htmlFor="stratumPort" class="col-12 mb-2 md:col-2 md:mb-0">Stratum Port:</label>
             <div class="col-12 md:col-10">
@@ -49,9 +52,9 @@
                 <input pInputText id="stratumPassword" formControlName="stratumPassword" type="password" />
             </div>
         </div>
-
-
-
+      </div>
+      <div class="card">
+        <h5>ASIC</h5>
         <ng-container *ngIf="!devToolsOpen && ASICModel == eASICModel.BM1366">
 
             <div class="field grid p-fluid">
@@ -122,9 +125,10 @@
             </div>
 
         </ng-container>
-
-
-        <div class="col-12 md:col-4">
+      </div>
+      <div class="card">
+        <h5>Display</h5>
+        <div class="col-12">
             <div class="field-checkbox">
                 <p-checkbox name="flipscreen" formControlName="flipscreen" inputId="flipscreen"
                     [binary]="true"></p-checkbox>
@@ -132,19 +136,21 @@
             </div>
         </div>
 
-        <div class="col-12 md:col-4">
+        <div class="col-12">
             <div class="field-checkbox">
                 <p-checkbox name="autoscreenoff" formControlName="autoscreenoff" inputId="autoscreenoff"
                     [binary]="true"></p-checkbox>
-                <label for="autoscreenoff">Automatic screen shutdown</label>
+                <label for="autoscreenoff">Automatic Display Shutdown</label>
             </div>
         </div>
-
+      </div>
+      <div class="card">
+        <h5>Temperature Control</h5>
         <div class="col-12 md:col-4">
             <div class="field-checkbox">
                 <p-checkbox name="invertfanpolarity" formControlName="invertfanpolarity" inputId="invertfanpolarity"
                     [binary]="true"></p-checkbox>
-                <label for="invertfanpolarity">Invert Fan Polarity</label>
+                <label for="invertfanpolarity">Invert Fan PWM Polarity</label>
             </div>
         </div>
 
@@ -156,9 +162,34 @@
             </div>
         </div>
 
+        <div *ngIf="form.controls['autofanspeed'].value == true">
+          <div class="col-12 pl-4" *ngIf="form.controls['autofanspeed'].value == true">
+
+              <div class="field-checkbox">
+                 <p-checkbox name="autofanSetpoint" formControlName="autofanSetpoint" inputId="autofanSetpoint"
+                    [binary]="true"></p-checkbox>
+                <label for="autofanSetpoint">Maintain Constant ASIC Temperature</label>
+              </div>
+
+          </div>
+        </div>
+
+        <div *ngIf="form.controls['autofanspeed'].value == true && form.controls['autofanSetpoint'].value == true">
+          <div class="col-12 pl-8" *ngIf="form.controls['autofanspeed'].value == true && form.controls['autofanSetpoint'].value == true">
+
+              <div class="field grid p-fluid">
+                <label htmlFor="tempSetpoint" class="col-12 mb-2 md:col-2 md:mb-0">ASIC Temperature Setpoint [°C]:</label>
+                <div class="col-12 md:col-10">
+                    <input pInputText id="tempSetpoint" formControlName="tempSetpoint" type="number" />
+                </div>
+              </div>
+
+          </div>
+        </div>
+
 
         <div *ngIf="form.controls['autofanspeed'].value != true">
-            <div class="col-12" *ngIf="form.controls['autofanspeed'].value != true">
+            <div class="col-12 pl-4" *ngIf="form.controls['autofanspeed'].value != true">
                 <label>Fan Speed {{form.controls['fanspeed'].value}}%
                     <b *ngIf="form.controls['fanspeed'].value < 33" style="color:red">Danger: Could Cause
                         Overheating</b> <b *ngIf="form.controls['fanspeed'].value == 100" style="color:	#F2A900">S19
@@ -167,14 +198,14 @@
                 <p-slider formControlName="fanspeed"></p-slider>
             </div>
         </div>
-
-        <div class="mt-2">
+      </div>
+        <div class="mt-3">
             <button pButton [disabled]="form.invalid" (click)="updateSystem()"
-                class="btn btn-primary mr-2">Save</button>
-            <b style="line-height: 34px;">You must restart this device after saving for changes to take effect.</b>
+                class="btn btn-primary mr-2">&nbsp;Save&nbsp;</button>
+            <b style="line-height: 34px;">You must restart this device after saving for some changes to take effect.</b>
         </div>
 
-        
+
 
 
     </form>

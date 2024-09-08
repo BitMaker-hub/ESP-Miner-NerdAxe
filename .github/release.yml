@@ -18,7 +18,7 @@ changelog:
       labels:
         - "*"
 
-template: |
+body: |
   This release supports the following ASIC models: BM1366, BM1368, BM1397, BM1370
 
   ## What's Changed

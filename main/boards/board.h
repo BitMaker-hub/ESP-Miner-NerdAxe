@@ -22,6 +22,9 @@ class Board {
     uint32_t m_asicMinDifficulty;
     uint32_t m_asicMaxDifficulty;
 
+    // Voltage regulator throttle temperature
+    float m_vr_maxTemp;
+
     // fans
     bool m_fanInvertPolarity;
     float m_fanPerc;
@@ -112,5 +115,10 @@ class Board {
     float getMaxVin()
     {
         return m_maxVin;
+    }
+
+    float getVrThrottleTemp()
+    {
+        return m_vr_maxTemp;
     }
 };

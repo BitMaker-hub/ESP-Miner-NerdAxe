@@ -31,7 +31,7 @@ NerdaxeGamma::NerdaxeGamma() : NerdAxe() {
     m_fanPerc = 100;
     m_vr_maxTemp = TPS546_THROTTLE_TEMP; //Set max voltage regulator temp
 
-    m_maxPin = 20.0;
+    m_maxPin = 25.0;
     m_minPin = 5.0;
     m_maxVin = 5.5;
     m_minVin = 4.5;

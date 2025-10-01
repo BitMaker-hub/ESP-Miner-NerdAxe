@@ -44,7 +44,7 @@ menu "Stratum Configuration"
     config STRATUM_DIFFICULTY
         int "Stratum default difficulty"
         range 0 4294967296
-        default 1000
+        default 5000
         help
             A starting difficulty to use with the pool.
 
